@@ -1,0 +1,167 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Everyone Will Get Education</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      margin: 0;
+      background-color: #f5f7fa;
+      color: #333;
+      font-size: 20px; /* BIG TEXT for seniors */
+    }
+    header {
+      background-color: #4a90e2;
+      color: white;
+      padding: 20px;
+      text-align: center;
+    }
+    section {
+      padding: 20px;
+      max-width: 900px;
+      margin: auto;
+    }
+    .card {
+      background: white;
+      padding: 20px;
+      margin: 15px 0;
+      border-radius: 10px;
+      box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+    }
+    h2 {
+      color: #4a90e2;
+    }
+    footer {
+      background-color: #222;
+      color: white;
+      text-align: center;
+      padding: 15px;
+      font-size: 14px;
+    }
+    textarea, select, button {
+      width: 100%;
+      padding: 15px;
+      margin-top: 12px;
+      border-radius: 8px;
+      border: 1px solid #ccc;
+      font-size: 18px; /* Bigger inputs */
+    }
+    button {
+      background-color: #4a90e2;
+      color: white;
+      border: none;
+      cursor: pointer;
+    }
+    button:hover {
+      background-color: #357abd;
+    }
+  </style>
+</head>
+<body>
+
+  <header>
+    <h1>Everyone Will Get Education</h1>
+    <p>Learning, Helping, and Translating for Everyone</p>
+  </header>
+
+  <section>
+    <div class="card">
+      <h2>👋 About Me</h2>
+      <p>Hi, my name is Krishiv. I am an 11 year old boy who likes helping old people and young people.</p>
+    </div>
+
+    <div class="card">
+      <h2>💻 Services</h2>
+      <p>I make clean and simple websites and helpful things for people.</p>
+    </div>
+
+    <div class="card">
+      <h2>🌍 My Service: Free Translator</h2>
+      <p>You can write anything in any language. Select a language and I will convert it for you.</p>
+
+      <textarea id="inputText" placeholder="Write your text here..."></textarea>
+
+      <select id="language">
+        <option value="en">English</option>
+        <option value="hi">Hindi</option>
+        <option value="es">Spanish</option>
+        <option value="fr">French</option>
+      </select>
+
+      <button onclick="translateText()">Translate</button>
+      <button onclick="speakText()">🔊 Speak Translation</button>
+
+      <textarea id="outputText" placeholder="Translated text will appear here..."></textarea>
+
+      <button onclick="sayBye()">Bye</button>
+      <p id="byeMessage"></p>
+    </div>
+  </section>
+
+  <footer>
+    <p>© 2026 Everyone Will Get Education | Have a nice day 👋 Bye!</p>
+  </footer>
+
+  <script>
+    async function translateText() {
+      const text = document.getElementById('inputText').value.trim();
+      const lang = document.getElementById('language').value;
+
+      if (text === "") {
+        document.getElementById('outputText').value = "Please write something to translate.";
+        return;
+      }
+
+      document.getElementById('outputText').value = "Translating...";
+
+      try {
+        const url = `https://translate.googleapis.com/translate_a/single?client=gtx&sl=auto&tl=${lang}&dt=t&q=${encodeURIComponent(text)}`;
+        const response = await fetch(url);
+        const data = await response.json();
+
+        const translated = data[0].map(item => item[0]).join("");
+        document.getElementById('outputText').value = translated;
+      } catch (error) {
+        document.getElementById('outputText').value = "Translation failed. Please refresh and try again.";
+      }
+    }
+
+    function sayBye() {
+      document.getElementById('byeMessage').innerText = "Have a nice day 😊 Bye!";
+    }
+
+    function speakText() {
+      const text = document.getElementById('outputText').value;
+      if (text.trim() === "") {
+        alert("Nothing to speak yet.");
+        return;
+      }
+
+      if (!('speechSynthesis' in window)) {
+        alert("Sorry, your browser does not support voice.");
+        return;
+      }
+
+      window.speechSynthesis.cancel();
+
+      const utterance = new SpeechSynthesisUtterance(text);
+      utterance.rate = 0.9;
+      utterance.pitch = 1;
+
+      const selectedLang = document.getElementById('language').value;
+      const voices = window.speechSynthesis.getVoices();
+      const matchedVoice = voices.find(v => v.lang.startsWith(selectedLang));
+      if (matchedVoice) {
+        utterance.voice = matchedVoice;
+      }
+
+      window.speechSynthesis.speak(utterance);
+    }
+
+    window.speechSynthesis.onvoiceschanged = () => {};
+  </script>
+
+</body>
+</html>
